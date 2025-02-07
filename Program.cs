@@ -1,9 +1,6 @@
 ﻿//  dotnet add package Selenium.WebDriver
 //  dotnet add package HtmlAgilityPack
-//  dotnet add package EPPlus
-
-
-//  "EPPlus" Version="7.5.3"
+//  dotnet add package EPPlus//  "EPPlus" Version="7.5.3"
 //  "HtmlAgilityPack" Version="1.11.72"
 //  "Selenium.Support" Version="4.28.0"
 //  "Selenium.WebDriver" Version="4.28.0"
@@ -36,8 +33,6 @@ class Program
         driver.Navigate().GoToUrl(url);
         WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
         driver.Manage().Window.Maximize();
-
-
         // "Hepsi" seçeneğini seç
         var dropdownElement = wait.Until(d => d.FindElement(By.Id("dayId")));
         SelectElement listbox = new SelectElement(dropdownElement);
@@ -47,6 +42,8 @@ class Program
         checkbox.Click();
 
         Thread.Sleep(500);
+        listbox.SelectByText("Hepsi");
+        Thread.Sleep(2000);
         listbox.SelectByText("Hepsi");
         Thread.Sleep(2000);
         // Tabloyu bekle
@@ -99,8 +96,6 @@ class Program
                 node.InnerHtml = node.InnerHtml.Replace("amp;", "");
             }
         }
-
-
         List<string> imageLinks = new List<string>();
         foreach (var tr in doc.DocumentNode.SelectNodes("//tr"))
         {
@@ -122,14 +117,10 @@ class Program
                 imageLinks.Add("-");
             }
         }
-
-
         // Tabloyu seç
         var rows = doc.DocumentNode.SelectNodes("//tr");
 
         imageLinks.RemoveRange(0, 3); // İlk üç elemanı sil
-
-
 
         using (var package = new ExcelPackage())
         {
@@ -158,14 +149,10 @@ class Program
 
             // Get the last row in column B
             int lastRow = worksheet.Dimension.End.Row;
-
-
             // Process each row in column B
             for (int i = 1; i <= lastRow; i++)
             {
                 string cellValue = worksheet.Cells[i, 2].Text;
-
-
 
                 // Date processing logic
                 string currentDate = "";
@@ -197,8 +184,6 @@ class Program
             package.SaveAs(excelFile);
             Console.WriteLine(filePath + " Adlı Excel Dosyası Kaydedildi");
         }
-
-
     }
     static void Main(string[] args)
     {
@@ -214,7 +199,7 @@ class Program
         string filePath = Path.Combine(desktopPath, excel_file_name);
 
         DateTime currentTime = DateTime.Now;
-        // Saat 21:00 ile 23:59 arasında mı kontrol et
+        // Saat 20:00 ile 23:59 arasında mı kontrol et
         if (currentTime.Hour >= 20 && currentTime.Hour <= 23 && !File.Exists(filePath))
         {
             mackolik_run(filePath);
