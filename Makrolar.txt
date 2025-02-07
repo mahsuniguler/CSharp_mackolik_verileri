@@ -1,0 +1,35 @@
+Sub Sol_tarih_sil()
+    ' İlk sütuna boş bir sütun ekle
+    Columns(1).Insert Shift:=xlToRight
+    Dim lastRow As Long
+    Dim i As Long
+    Dim currentDate As Variant
+    ' Sütun B'deki son dolu satırı bul
+    lastRow = Cells(Rows.Count, 2).End(xlUp).Row
+    For i = 1 To lastRow
+        cellValue = Cells(i, 2).Value
+        ' Eğer hücrede ": " (iki nokta üst üste ve boşluk) varsa
+        If InStr(cellValue, ":") > 0 Then
+            ' ": " kısmını kaldır
+            cellValue = Replace(cellValue, ":", ":")
+            Cells(i, 2).Value = cellValue ' Güncellenmiş değeri B sütununa yaz
+        End If
+        If InStr(cellValue, ".") > 0 Then
+            ' "." kısmını kaldır
+            cellValue = Replace(cellValue, ".", ".")
+            Cells(i, 2).Value = cellValue ' Güncellenmiş değeri B sütununa yaz
+        End If
+        If IsDate(Cells(i, 2).Value) Then
+            currentDate = Cells(i, 2).Value ' Geçerli tarihi al
+        ElseIf i > 1 Then
+            currentDate = Cells(i - 1, 1).Value ' Önceki A sütunundaki tarihi kullan
+        End If
+        Cells(i, 1).Value = currentDate
+    Next i
+    For i = lastRow To 1 Step -1
+        ' Hücredeki değer tarih mi kontrol et
+        If IsDate(Cells(i, 2).Value) Then
+            Rows(i).Delete ' Satırı sil
+        End If
+    Next i
+End Sub
