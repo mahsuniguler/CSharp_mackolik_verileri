@@ -217,9 +217,10 @@ class Program
             kalan_sn = kalan_dk * 60 + kalan_saat * 60 * 60 + kalan_sn;
             Console.WriteLine($"{kalan_sn/60} DK Kaldı Lütfen Zamanınında Tekrar Çalıştırınız");
             // Console.WriteLine($"{kalan_dk } Kaldı Lütfen Zamanınında Tekrar Çalıştırınız");
-            Console.WriteLine("Saat bu aralıkta değil.");
-            Thread.Sleep(kalan_sn*1000);
-            mackolik_run(filePath);
+            Console.WriteLine("Saat bu aralıkta değil. Lütfen Saat 20:00 Da deneyiniz.");
+            Console.WriteLine("Çıkmak için Herhangi tuşa basınız");
+            
+            Console.ReadKey();
         }
     }
 
