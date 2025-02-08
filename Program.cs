@@ -16,7 +16,6 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using HtmlAgilityPack;
 using OfficeOpenXml;
-
 class Program
 {
     private static string CleanText(string input)
@@ -36,11 +35,9 @@ class Program
         // "Hepsi" seçeneğini seç
         var dropdownElement = wait.Until(d => d.FindElement(By.Id("dayId")));
         SelectElement listbox = new SelectElement(dropdownElement);
-
         // Checkbox'u işaretle
         var checkbox = wait.Until(d => d.FindElement(By.Id("justNotPlayed")));
         checkbox.Click();
-
         Thread.Sleep(500);
         listbox.SelectByText("Hepsi");
         Thread.Sleep(2000);
@@ -49,16 +46,13 @@ class Program
         // Tabloyu bekle
         string tableClass = "iddaa-oyna-table";
         wait.Until(d => d.FindElement(By.ClassName(tableClass)).Displayed);
-
         // HTML içeriğini al
         IWebElement tableHtml = driver.FindElement(By.ClassName(tableClass));
         string tableHtmlText = tableHtml.GetAttribute("outerHTML");
-
         // HtmlAgilityPack ile HTML'yi parse et
         HtmlDocument doc = new HtmlDocument();
         doc.LoadHtml(tableHtmlText);
         driver.Quit();
-
         // Değiştirme işlemleri
         foreach (var node in doc.DocumentNode.SelectNodes("//text()"))
         {
@@ -67,25 +61,21 @@ class Program
             {
                 node.InnerHtml = node.InnerHtml.Replace("> &nbsp;<", "><");
             }
-
             // < -> "><"
             if (node.InnerText.Contains("> <"))
             {
                 node.InnerHtml = node.InnerHtml.Replace("> <", "><");
             }
-
             // <b>&nbsp;</b> -> "----------"
             if (node.InnerHtml.Contains("<b>&nbsp;</b>"))
             {
                 node.InnerHtml = node.InnerHtml.Replace("<b>&nbsp;</b>", "");
             }
-
             // &nbsp; -> ""
             if (node.InnerText.Contains("&nbsp;"))
             {
                 node.InnerHtml = node.InnerHtml.Replace("&nbsp;", "");
             }
-
             // <b> or </b> -> ""
             if (node.InnerHtml.Contains("<b>"))
             {
@@ -119,9 +109,7 @@ class Program
         }
         // Tabloyu seç
         var rows = doc.DocumentNode.SelectNodes("//tr");
-
         imageLinks.RemoveRange(0, 3); // İlk üç elemanı sil
-
         using (var package = new ExcelPackage())
         {
             // Get the first worksheet
@@ -137,23 +125,20 @@ class Program
                 }
             }
             int rowIndex2 = 1; // Veri yazımına 2. satırdan başla
-
             foreach (var link in imageLinks)
             {
                 worksheet.Cells[rowIndex2, 5].Value = link; // Resim bağlantısı
-
                 rowIndex2++;
             }
             // Insert a new empty column at the beginning (first column)
             worksheet.InsertColumn(1, 1); // Inserts at index 1 (the first column)
-
             // Get the last row in column B
             int lastRow = worksheet.Dimension.End.Row;
+            int lastCol = worksheet.Dimension.End.Column;
             // Process each row in column B
             for (int i = 1; i <= lastRow; i++)
             {
                 string cellValue = worksheet.Cells[i, 2].Text;
-
                 // Date processing logic
                 string currentDate = "";
                 if (cellValue.Contains("."))
@@ -166,6 +151,8 @@ class Program
                 }
                 worksheet.Cells[i, 1].Value = currentDate;
             }
+            lastRow = worksheet.Dimension.End.Row;
+            lastCol = worksheet.Dimension.End.Column;
             // Delete rows where column B contains dates
             for (int i = lastRow; i >= 1; i--)
             {
@@ -174,10 +161,47 @@ class Program
                 string cellValue = worksheet.Cells[i, 2].Text;
                 if (cellValue.Contains(".") || !m_s.Contains("-") || i_y == "-")
                 {
-
                     worksheet.DeleteRow(i);
                 }
-
+            }
+            bool bos_sutun = true;
+            Console.Write($"{lastRow} - {lastCol}");
+            lastRow = worksheet.Dimension.End.Row;
+            lastCol = worksheet.Dimension.End.Column;
+            for (int j = lastCol; j >= 1; j--)
+            {
+                for (int i = lastRow; i >= 1; i--)
+                {
+                    try
+                    {
+                        string deger = worksheet.Cells[i, j].Text;
+                        if (deger.Contains(","))
+                        {
+                            worksheet.Cells[i, j].Value = float.Parse(deger);
+                        }
+                        if (deger.Length >= 1 && deger != "-")
+                        {
+                            bos_sutun = false;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+                if (bos_sutun)
+                {
+                    Console.Write($"{lastRow} - {lastCol}  ");
+                    worksheet.DeleteColumn(j);
+                }
+                bos_sutun = true;
+            }
+            lastRow = worksheet.Dimension.End.Row;
+            lastCol = worksheet.Dimension.End.Column;
+            for (int j = lastRow; j >= 1; j--)
+            {
+                string deger = worksheet.Cells[j, 4].Text;
+                int.Parse(deger);
+                worksheet.Cells[j, 4].Value = int.Parse(deger); ;
             }
             // Excel dosyasını kaydet
             FileInfo excelFile = new FileInfo(filePath);
@@ -185,7 +209,7 @@ class Program
             Console.WriteLine(filePath + " Adlı Excel Dosyası Kaydedildi");
         }
     }
-    static void Main(string[] args)
+        static void Main(string[] args)
     {
         string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         string desktopPath = Path.Combine(userProfile, "Desktop", "Mackolik_Verileri");
@@ -193,11 +217,9 @@ class Program
         {
             Directory.CreateDirectory(desktopPath);
         }
-
         string tarih = DateTime.Now.ToString("yyyyMMdd"); // Tarih formatını dilediğiniz gibi değiştirebilirsiniz
         string excel_file_name = $"mackolik_verileri{tarih}.xlsx";
         string filePath = Path.Combine(desktopPath, excel_file_name);
-
         DateTime currentTime = DateTime.Now;
         // Saat 20:00 ile 23:59 arasında mı kontrol et
         if (currentTime.Hour >= 20 && currentTime.Hour <= 23 && !File.Exists(filePath))
@@ -213,15 +235,12 @@ class Program
             int kalan_saat = 20 - currentTime.Hour;
             int kalan_dk = 00 - currentTime.Minute;
             int kalan_sn = 0 - currentTime.Second;
-
             kalan_sn = kalan_dk * 60 + kalan_saat * 60 * 60 + kalan_sn;
             Console.WriteLine($"{kalan_sn/60} DK Kaldı Lütfen Zamanınında Tekrar Çalıştırınız");
             // Console.WriteLine($"{kalan_dk } Kaldı Lütfen Zamanınında Tekrar Çalıştırınız");
             Console.WriteLine("Saat bu aralıkta değil. Lütfen Saat 20:00 Da deneyiniz.");
             Console.WriteLine("Çıkmak için Herhangi tuşa basınız");
-            
             Console.ReadKey();
         }
     }
-
 }
