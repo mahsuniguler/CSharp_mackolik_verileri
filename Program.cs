@@ -165,7 +165,6 @@ class Program
                 }
             }
             bool bos_sutun = true;
-            Console.Write($"{lastRow} - {lastCol}");
             lastRow = worksheet.Dimension.End.Row;
             lastCol = worksheet.Dimension.End.Column;
             for (int j = lastCol; j >= 1; j--)
@@ -190,7 +189,6 @@ class Program
                 }
                 if (bos_sutun)
                 {
-                    Console.Write($"{lastRow} - {lastCol}  ");
                     worksheet.DeleteColumn(j);
                 }
                 bos_sutun = true;
@@ -222,7 +220,7 @@ class Program
         string filePath = Path.Combine(desktopPath, excel_file_name);
         DateTime currentTime = DateTime.Now;
         // Saat 20:00 ile 23:59 arasında mı kontrol et
-        if (currentTime.Hour >= 20 && currentTime.Hour <= 23 && !File.Exists(filePath))
+        if (currentTime.Hour <= 20 && currentTime.Hour <= 23 && !File.Exists(filePath))
         {
             mackolik_run(filePath);
         }
