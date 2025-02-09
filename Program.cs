@@ -229,6 +229,8 @@ class Program
         else if (File.Exists(filePath))
         {
             Console.WriteLine($"{filePath} Dosyası Mevcuttur");
+            Console.WriteLine("Çıkmak için Herhangi tuşa basınız");
+            Console.ReadKey();
         }
         else
         {
@@ -237,7 +239,6 @@ class Program
             int kalan_sn = 0 - currentTime.Second;
             kalan_sn = kalan_dk * 60 + kalan_saat * 60 * 60 + kalan_sn;
             Console.WriteLine($"{kalan_sn/60} DK Kaldı Lütfen Zamanınında Tekrar Çalıştırınız");
-            // Console.WriteLine($"{kalan_dk } Kaldı Lütfen Zamanınında Tekrar Çalıştırınız");
             Console.WriteLine("Saat bu aralıkta değil. Lütfen Saat 20:00 Da deneyiniz.");
             Console.WriteLine("Çıkmak için Herhangi tuşa basınız");
             Console.ReadKey();
